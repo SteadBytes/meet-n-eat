@@ -16,7 +16,7 @@ from redis import Redis
 
 redis = Redis()
 auth = HTTPBasicAuth()
-engine = create_engine('sqlite:///paleKale.db')
+engine = create_engine('sqlite:///meet-n-eat.db')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
