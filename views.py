@@ -24,19 +24,10 @@ session = DBSession()
 app = Flask(__name__)
 
 
-@app.route('/api/v1/<str:provider>/login', methods=["POST"])
-def login(provider):
-    pass
-
-
-@app.route('/api/v1/<str:provider>/logout', methods=["POST"])
-def logout(provider):
-    pass
-
-
 @app.route('/api/v1/users', methods=["GET"])
 def get_users():
-    pass
+    users = session.query(User).all()
+    return jsonify(Users=[i.serialize for i in users])
 
 
 @app.route('/api/v1/users', methods=["POST"])
@@ -51,6 +42,16 @@ def update_delete_user():
 
 @app.route('/api/v1/users/<int:id>', methods=["GET"])
 def get_user(id):
+    pass
+
+
+@app.route('/api/v1/<provider>/login', methods=["POST"])
+def login(provider):
+    pass
+
+
+@app.route('/api/v1/<provider>/logout', methods=["POST"])
+def logout(provider):
     pass
 
 

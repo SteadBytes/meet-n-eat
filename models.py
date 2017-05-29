@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
@@ -16,7 +16,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(32), index=True)
     picture = Column(String)
-    email = Column(String, index=true)
+    email = Column(String, index=True)
     password_hash = Column(String(64))
 
     def hash_password(self, password):
@@ -25,13 +25,22 @@ class User(Base):
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
+    @property
+    def serialize(self):
+        return {
+            'username': self.username,
+            'email': self.email,
+            'id': self.id,
+            'picture': self.picture,
+        }
+
 
 class Request(Base):
-    __tablename__ = 'base'
+    __tablename__ = 'request'
     id = Column(Integer, primary_key=True)
     meal_type = Column(String)
     location_string = Column(String)
-    latitude = Column(string)
+    latitude = Column(String)
     longitude = Column(String)
     meal_time = Column(String)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -43,7 +52,8 @@ class Proposal(Base):
     id = Column(Integer, primary_key=True)
     to_user = Column(Integer, ForeignKey('user.id'))
     from_user = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
+    user1 = relationship("User", foreign_keys=[to_user])
+    user2 = relationship("User", foreign_keys=[from_user])
     request_id = Column(Integer, ForeignKey('request.id'))
     request = relationship(Request)
 
@@ -51,9 +61,12 @@ class Proposal(Base):
 class MealDate(Base):
     __tablename__ = 'meal_date'
     id = Column(Integer, primary_key=True)
-    user_1 = Column(Integer, ForeignKey('user.id'))
-    user_2 = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
+    user1_id = Column(Integer, ForeignKey('user.id'))
+    user2_id = Column(Integer, ForeignKey('user.id'))
+
+    user1 = relationship("User", foreign_keys=[user1_id])
+    user2 = relationship("User", foreign_keys=[user2_id])
+
     restaurant_name = Column(String)
     restaurant_address = Column(String)
     restaurant_picture = Column(String)
