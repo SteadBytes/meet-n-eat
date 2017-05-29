@@ -32,7 +32,19 @@ def get_users():
 
 @app.route('/api/v1/users', methods=["POST"])
 def make_user():
-    pass
+    username = request.json.get('username')
+    password = request.json.get('password')
+    email = request.json.get('email')
+    picture = request.json.get('picture')
+    if username is None or password is None:
+        abort(400)  # missing args
+    if session.query(User).filter_by(username=username).first() is not None:
+        abort(400)  # user exists
+    user = User(username=username, email=email, picture=picture)
+    user.hash_password(password)
+    session.add(user)
+    session.commit()
+    return jsonify({'message': 'successful user registration', 'user': user.serialize}), 200
 
 
 @app.route('/api/v1/users', methods=["PUT", 'DELETE'])
