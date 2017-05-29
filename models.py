@@ -25,25 +25,6 @@ class User(Base):
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
-    def generate_auth_token(self, expiration=600):
-        s = Serializer(secret_key, expires_in=expiration)
-        return s.dumps({'id': self.id})
-
-    # Add a method to verify auth tokens here
-    @staticmethod
-    def verify_auth_token(token):
-        s = Serializer(secret_key)
-        try:
-            data = s.loads(token)
-        except SignatureExpired:
-            # Valid, but expired token
-            return None
-        except BadSignature:
-            # Invalid token
-            return None
-        user_id = data['id']
-        return user_id
-
 
 class Request(Base):
     __tablename__ = 'base'

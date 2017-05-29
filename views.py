@@ -1,5 +1,6 @@
 from models import Base, User, Request, Proposal, MealDate
 from flask import Flask, jsonify, request, url_for, abort, g
+from flask import session as login_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
@@ -23,92 +24,92 @@ session = DBSession()
 app = Flask(__name__)
 
 
-@app.route('/api/v1/<str:provider>/login', methods=["POST"]):
+@app.route('/api/v1/<str:provider>/login', methods=["POST"])
 def login(provider):
     pass
 
 
-@app.route('/api/v1/<str:provider>/logout', methods=["POST"]):
+@app.route('/api/v1/<str:provider>/logout', methods=["POST"])
 def logout(provider):
     pass
 
 
-@app.route('/api/v1/users', methods=["GET"]):
+@app.route('/api/v1/users', methods=["GET"])
 def get_users():
     pass
 
 
-@app.route('/api/v1/users', methods=["POST"]):
+@app.route('/api/v1/users', methods=["POST"])
 def make_user():
     pass
 
 
-@app.route('/api/v1/users', methods=["PUT", 'DELETE']):
+@app.route('/api/v1/users', methods=["PUT", 'DELETE'])
 def update_delete_user():
     pass
 
 
-@app.route('/api/v1/users/<int:id>', methods=["GET"]):
+@app.route('/api/v1/users/<int:id>', methods=["GET"])
 def get_user(id):
     pass
 
 
-@app.route('/api/v1/requests', methods=["GET"]):
+@app.route('/api/v1/requests', methods=["GET"])
 def get_requests():
     pass
 
 
-@app.route('/api/v1/requests', methods=["POST"]):
+@app.route('/api/v1/requests', methods=["POST"])
 def make_request():
     pass
 
 
-@app.route('/api/v1/requests/<int:id>', methods=["GET"]):
+@app.route('/api/v1/requests/<int:id>', methods=["GET"])
 def get_request(id):
     pass
 
 
-@app.route('/api/v1/requests/<int:id>', methods=["PUT", "DELETE"]):
+@app.route('/api/v1/requests/<int:id>', methods=["PUT", "DELETE"])
 def update_request(id):
     pass
 
 
-@app.route('/api/v1/proposals', methods=["GET"]):
+@app.route('/api/v1/proposals', methods=["GET"])
 def get_proposals():
     pass
 
 
-@app.route('/api/v1/proposals', methods=["POST"]):
+@app.route('/api/v1/proposals', methods=["POST"])
 def make_proposal():
     pass
 
 
-@app.route('/api/v1/proposals/<int:id>', methods=["GET"]):
+@app.route('/api/v1/proposals/<int:id>', methods=["GET"])
 def get_proposal(id):
     pass
 
 
-@app.route('/api/v1/proposals/<int:id>', methods=["PUT", "DELETE"]):
+@app.route('/api/v1/proposals/<int:id>', methods=["PUT", "DELETE"])
 def update_proposal(id):
     pass
 
 
-@app.route('/api/v1/dates', methods=["GET"]):
+@app.route('/api/v1/dates', methods=["GET"])
 def get_dates():
     pass
 
 
-@app.route('/api/v1/dates', methods=["POST"]):
+@app.route('/api/v1/dates', methods=["POST"])
 def make_date():
     pass
 
 
-@app.route('/api/v1/dates/<int:id>', methods=["GET"]):
+@app.route('/api/v1/dates/<int:id>', methods=["GET"])
 def get_date(id):
     pass
 
 
-@app.route('/api/v1/dates/<int:id>', methods=["PUT", "DELETE"]):
+@app.route('/api/v1/dates/<int:id>', methods=["PUT", "DELETE"])
 def udpate_date(id):
     pass
 
