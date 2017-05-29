@@ -93,11 +93,26 @@ def make_user():
 
 
 @app.route('/api/v1/users', methods=["PUT", 'DELETE'])
+@auth.login_required
 def update_delete_user():
     if request.method == 'PUT':
-        pass
+        username = request.json.get('username')
+        password = request.json.get('password')
+        email = request.json.get('email')
+        picture = request.json.get('picture')
+        user = g.user
+        user.username = username
+        user.hash_password(password)
+        user.email = email
+        user.picture = picture
+        session.add(user)
+        session.commit()
+        g.user = user
+        return jsonify({"message": "User successfully updated", "user": user.serialize})
     if request.method == 'DELETE':
-        pass
+        session.delete(g.user)
+        session.commit()
+    return jsonify({"message": "User successfully deleted"})
 
 
 @app.route('/api/v1/users/<int:id>', methods=["GET"])
