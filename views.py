@@ -115,9 +115,16 @@ def update_delete_user():
     return jsonify({"message": "User successfully deleted"})
 
 
+@auth.login_required
 @app.route('/api/v1/users/<int:id>', methods=["GET"])
 def get_user(id):
-    pass
+    try:
+        user = session.query(User).filter_by(id=id).one()
+    except:
+        return jsonify({"error": "No user for given id"}), 404
+
+    if user:
+        return jsonify(User=user.serialize)
 
 
 @app.route('/api/v1/<provider>/login', methods=["POST"])

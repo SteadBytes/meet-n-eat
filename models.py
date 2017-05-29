@@ -50,7 +50,6 @@ class User(Base):
         return {
             'username': self.username,
             'email': self.email,
-            'id': self.id,
             'picture': self.picture,
         }
 
