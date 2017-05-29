@@ -24,6 +24,16 @@ session = DBSession()
 app = Flask(__name__)
 
 
+@auth.verify_password
+def verify_password(username, password):
+    user = session.query(User).filter_by(username=username).first()
+    if not user or not user.verify_password(password):
+        return False
+    g.user  # add user to session
+    return True
+
+
+@auth.verify_password
 @app.route('/api/v1/users', methods=["GET"])
 def get_users():
     users = session.query(User).all()
@@ -47,11 +57,25 @@ def make_user():
     return jsonify({'message': 'successful user registration', 'user': user.serialize}), 200
 
 
+@app.route('/api/v1/login', methods=['POST'])
+def user_login():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    user = session.query(User).filter_by(username=username).first()
+    if not user.verify_password(password):
+        return jsonify({'error': "Incorrect username or password"}), 422
+
+    login_session['username'] = username
+    return jsonify({'message': "User successfully logged in", 'user': user.serialize}), 200
+
+
+@auth.verify_password
 @app.route('/api/v1/users', methods=["PUT", 'DELETE'])
 def update_delete_user():
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/users/<int:id>', methods=["GET"])
 def get_user(id):
     pass
@@ -67,61 +91,73 @@ def logout(provider):
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/requests', methods=["GET"])
 def get_requests():
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/requests', methods=["POST"])
 def make_request():
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/requests/<int:id>', methods=["GET"])
 def get_request(id):
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/requests/<int:id>', methods=["PUT", "DELETE"])
 def update_request(id):
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/proposals', methods=["GET"])
 def get_proposals():
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/proposals', methods=["POST"])
 def make_proposal():
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/proposals/<int:id>', methods=["GET"])
 def get_proposal(id):
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/proposals/<int:id>', methods=["PUT", "DELETE"])
 def update_proposal(id):
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/dates', methods=["GET"])
 def get_dates():
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/dates', methods=["POST"])
 def make_date():
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/dates/<int:id>', methods=["GET"])
 def get_date(id):
     pass
 
 
+@auth.verify_password
 @app.route('/api/v1/dates/<int:id>', methods=["PUT", "DELETE"])
 def udpate_date(id):
     pass
