@@ -33,7 +33,6 @@ def verify_password(username, password):
     return True
 
 
-@auth.verify_password
 @app.route('/api/v1/users', methods=["GET"])
 def get_users():
     users = session.query(User).all()
@@ -69,13 +68,19 @@ def user_login():
     return jsonify({'message': "User successfully logged in", 'user': user.serialize}), 200
 
 
-@auth.verify_password
+@app.route('/api/v1/logout', methods=['POST'])
+def user_logout():
+    if login_session.get('username') == None:
+        return jsonify({'error': "No user currently logged in"}), 400
+    del login_session['username']
+    return jsonify({'message': "User successfully logged out"}), 200
+
+
 @app.route('/api/v1/users', methods=["PUT", 'DELETE'])
 def update_delete_user():
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/users/<int:id>', methods=["GET"])
 def get_user(id):
     pass
@@ -91,73 +96,61 @@ def logout(provider):
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/requests', methods=["GET"])
 def get_requests():
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/requests', methods=["POST"])
 def make_request():
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/requests/<int:id>', methods=["GET"])
 def get_request(id):
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/requests/<int:id>', methods=["PUT", "DELETE"])
 def update_request(id):
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/proposals', methods=["GET"])
 def get_proposals():
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/proposals', methods=["POST"])
 def make_proposal():
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/proposals/<int:id>', methods=["GET"])
 def get_proposal(id):
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/proposals/<int:id>', methods=["PUT", "DELETE"])
 def update_proposal(id):
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/dates', methods=["GET"])
 def get_dates():
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/dates', methods=["POST"])
 def make_date():
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/dates/<int:id>', methods=["GET"])
 def get_date(id):
     pass
 
 
-@auth.verify_password
 @app.route('/api/v1/dates/<int:id>', methods=["PUT", "DELETE"])
 def udpate_date(id):
     pass
