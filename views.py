@@ -25,15 +25,51 @@ app = Flask(__name__)
 
 
 @auth.verify_password
-def verify_password(username, password):
-    user = session.query(User).filter_by(username=username).first()
-    if not user or not user.verify_password(password):
-        return False
-    g.user  # add user to session
+def verify_password(username_or_token, password):
+    user_id = User.verify_auth_token(username_or_token)
+    # verify_auth_token returns None if not token based login
+    # password is then ignored
+    if user_id:
+        user = session.query(User).filter_by(id=user_id).one()
+    else:
+        user = session.query(User).filter_by(
+            username=username_or_token).first()
+        if not user or not user.verify_password(password):
+            return False
+    g.user = user  # add user to session
     return True
 
 
+@app.route('/api/v1/token')
+@auth.login_required
+def get_auth_token():
+    token = g.user.generate_auth_token()
+    return jsonify({'token': token.decode('ascii')})
+
+
+@app.route('/api/v1/login', methods=['POST'])
+def user_login():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    user = session.query(User).filter_by(username=username).first()
+    if not user.verify_password(password):
+        return jsonify({'error': "Incorrect username or password"}), 422
+
+    login_session['username'] = username
+    return jsonify({'message': "User successfully logged in", 'user': user.serialize}), 200
+
+
+@app.route('/api/v1/logout', methods=['POST'])
+@auth.login_required
+def user_logout():
+    if login_session.get('username') == None:
+        return jsonify({'error': "No user currently logged in"}), 400
+    del login_session['username']
+    return jsonify({'message': "User successfully logged out"}), 200
+
+
 @app.route('/api/v1/users', methods=["GET"])
+@auth.login_required
 def get_users():
     users = session.query(User).all()
     return jsonify(Users=[i.serialize for i in users])
@@ -56,29 +92,12 @@ def make_user():
     return jsonify({'message': 'successful user registration', 'user': user.serialize}), 200
 
 
-@app.route('/api/v1/login', methods=['POST'])
-def user_login():
-    username = request.json.get('username')
-    password = request.json.get('password')
-    user = session.query(User).filter_by(username=username).first()
-    if not user.verify_password(password):
-        return jsonify({'error': "Incorrect username or password"}), 422
-
-    login_session['username'] = username
-    return jsonify({'message': "User successfully logged in", 'user': user.serialize}), 200
-
-
-@app.route('/api/v1/logout', methods=['POST'])
-def user_logout():
-    if login_session.get('username') == None:
-        return jsonify({'error': "No user currently logged in"}), 400
-    del login_session['username']
-    return jsonify({'message': "User successfully logged out"}), 200
-
-
 @app.route('/api/v1/users', methods=["PUT", 'DELETE'])
 def update_delete_user():
-    pass
+    if request.method == 'PUT':
+        pass
+    if request.method == 'DELETE':
+        pass
 
 
 @app.route('/api/v1/users/<int:id>', methods=["GET"])
