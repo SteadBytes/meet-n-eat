@@ -65,6 +65,17 @@ class Request(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
+    @property
+    def serialize(self):
+        return {
+            'meal_type': self.meal_type,
+            'location_string': self.location_string,
+            'longitude': self.longitude,
+            'latitude': self.latitude,
+            'meal_time': self.meal_time,
+            'user_id': self.user_id
+        }
+
 
 class Proposal(Base):
     __tablename__ = 'proposal'
