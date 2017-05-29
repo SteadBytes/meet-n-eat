@@ -331,9 +331,14 @@ def make_request():
     return jsonify({"message": "New MealDate request successful", "request": newRequest.serialize})
 
 
+@auth.login_required
 @app.route('/api/v1/requests/<int:id>', methods=["GET"])
 def get_request(id):
-    pass
+    try:
+        request = session.query(Request).filter_by(id=id).one()
+    except:
+        return jsonify({"error": "No request found for given id"}), 404
+    return jsonify(Request=request.serialize)
 
 
 @app.route('/api/v1/requests/<int:id>', methods=["PUT", "DELETE"])
