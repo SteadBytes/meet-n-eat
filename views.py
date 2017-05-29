@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 from functools import update_wrapper
+from findarestaurant import find_a_restaurant, get_geocode_location
 import time
 import json
 from flask_httpauth import HTTPBasicAuth
@@ -290,6 +291,7 @@ def g_disconnect():
         return response
 
 
+@auth.login_required
 @app.route('/api/v1/<provider>/logout', methods=["POST"])
 def logout(provider):
     if provider == 'google':
@@ -303,18 +305,30 @@ def logout(provider):
     del login_session['user_id']
     del login_session['provider']
     flash("You have successfully been logged out.")
-    return redirect(url_for('showRestaurants'))
+    return redirect(url_for('show_login'))
 
 
+@auth.login_required
 @app.route('/api/v1/requests', methods=["GET"])
 def get_requests():
     requests = session.query(Request).all()
     return jsonify(Requests=[i.serialize for i in requests])
 
 
+@auth.login_required
 @app.route('/api/v1/requests', methods=["POST"])
 def make_request():
-    pass
+    user_id = request.json.get('user_id')
+    meal_type = request.json.get('meal_type')
+    location_string = request.json.get('location_string')
+    meal_time = request.json.get('meal_time')
+    lat, lng = get_geocode_location(location_string)
+    newRequest = Request(user_id=user_id, meal_type=meal_type,
+                         location_string=location_string, latitude=lat,
+                         longitude=lng, meal_time=meal_time)
+    session.add(newRequest)
+    session.commit()
+    return jsonify({"message": "New MealDate request successful", "request": newRequest.serialize})
 
 
 @app.route('/api/v1/requests/<int:id>', methods=["GET"])
