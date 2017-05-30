@@ -9,7 +9,7 @@ session = DBSession()
 
 
 def populate_users():
-    for i in range(0, 10):
+    for i in range(1, 11):
         username = "user%s" % str(i)
         email = "%s@test.com" % username
         user = User(username=username, email=email)
@@ -32,12 +32,12 @@ location_strings = ["Colchester, Essex", "Jakarta, Indonesia",
 
 
 def populate_requests():
-    for i in range(0, 10):
+    for i in range(1, 11):
         meal_type = random.choice(meal_types)
         location_string = random.choice(location_strings)
         latitude, longitude = get_geocode_location(location_string)
         meal_time = random.choice(meal_times)
-        user_id = random.randint(1, 10)
+        user_id = i
         request = Request(meal_type=meal_type, location_string=location_string,
                           latitude=latitude, longitude=longitude, meal_time=meal_time, user_id=user_id)
         session.add(request)

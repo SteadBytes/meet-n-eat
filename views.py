@@ -78,6 +78,7 @@ def verify_password(username_or_token, password):
         if not user or not user.verify_password(password):
             return False
     g.user = user  # add user to session
+    print(user.username)
     return True
 
 
@@ -166,8 +167,8 @@ def update_delete_user():
     return jsonify({"message": "User successfully deleted"})
 
 
-@auth.login_required
 @app.route('/api/v1/users/<int:id>', methods=["GET"])
+@auth.login_required
 def get_user(id):
     try:
         user = session.query(User).filter_by(id=id).one()
@@ -291,8 +292,8 @@ def g_disconnect():
         return response
 
 
-@auth.login_required
 @app.route('/api/v1/<provider>/logout', methods=["POST"])
+@auth.login_required
 def logout(provider):
     if provider == 'google':
         gdisconnect()
@@ -308,15 +309,15 @@ def logout(provider):
     return redirect(url_for('show_login'))
 
 
-@auth.login_required
 @app.route('/api/v1/requests', methods=["GET"])
+@auth.login_required
 def get_requests():
     requests = session.query(Request).all()
     return jsonify(Requests=[i.serialize for i in requests])
 
 
-@auth.login_required
 @app.route('/api/v1/requests', methods=["POST"])
+@auth.login_required
 def make_request():
     user_id = request.json.get('user_id')
     meal_type = request.json.get('meal_type')
@@ -331,19 +332,48 @@ def make_request():
     return jsonify({"message": "New MealDate request successful", "request": newRequest.serialize})
 
 
-@auth.login_required
 @app.route('/api/v1/requests/<int:id>', methods=["GET"])
+@auth.login_required
 def get_request(id):
     try:
-        request = session.query(Request).filter_by(id=id).one()
+        r = session.query(Request).filter_by(id=id).one()
     except:
         return jsonify({"error": "No request found for given id"}), 404
-    return jsonify(Request=request.serialize)
+    return jsonify(Request=r.serialize)
 
 
 @app.route('/api/v1/requests/<int:id>', methods=["PUT", "DELETE"])
+@auth.login_required
 def update_request(id):
-    pass
+    try:
+        r = session.query(Request).filter_by(id=id).one()
+    except:
+        return jsonify({"error": "No request found for given id"})
+    user = g.user
+    print(r.user_id)
+    print(user.id)
+    if user.id != r.user_id:
+        abort(401)
+    if request.method == "PUT":
+        if not request.json:
+            abort(400)
+        user_id = request.json.get('user_id')
+        meal_type = request.json.get('meal_type')
+        location_string = request.json.get('location_string')
+        meal_time = request.json.get('meal_time')
+        lat, lng = get_geocode_location(location_string)
+        r.meal_type = meal_type
+        r.location_string = location_string
+        r.meal_time = meal_time
+        r.latitude = lat
+        r.longitude = lng
+        session.add(r)
+        session.commit()
+        return jsonify({"message": "Request id=%s updated successfully" % id, "request": r.serialize})
+    if request.method == "DELETE":
+        session.delete(r)
+        session.commit()
+        return jsonify({"message": "Request id=%s deleted successfully" % id})
 
 
 @app.route('/api/v1/proposals', methods=["GET"])
