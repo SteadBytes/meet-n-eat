@@ -87,6 +87,13 @@ class Proposal(Base):
     request_id = Column(Integer, ForeignKey('request.id'))
     request = relationship(Request)
 
+    @property
+    def serialize(self):
+        return {
+            'to_user': self.to_user,
+            'from_user': self.from_user,
+        }
+
 
 class MealDate(Base):
     __tablename__ = 'meal_date'

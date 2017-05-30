@@ -85,7 +85,7 @@ def verify_password(username_or_token, password):
 @app.route('/api/v1/token')
 @auth.login_required
 def get_auth_token():
-    token = g.user.generate_auth_token()
+    token = g.user.generate_auth_token(6000)
     return jsonify({'token': token.decode('ascii')})
 
 
@@ -104,11 +104,12 @@ def user_login():
     username = request.json.get('username')
     password = request.json.get('password')
     user = session.query(User).filter_by(username=username).first()
-    if not user.verify_password(password):
+    if not user or not user.verify_password(password):
         return jsonify({'error': "Incorrect username or password"}), 422
 
     login_session['username'] = username
-    return jsonify({'message': "User successfully logged in", 'user': user.serialize}), 200
+    token = user.generate_auth_token(6000)
+    return jsonify({'message': "User successfully logged in", 'user': user.serialize, "token": token.decode('ascii')}), 200
 
 
 @app.route('/api/v1/logout', methods=['POST'])
@@ -377,6 +378,7 @@ def update_request(id):
 
 
 @app.route('/api/v1/proposals', methods=["GET"])
+@auth.login_required
 def get_proposals():
     pass
 
