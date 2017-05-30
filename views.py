@@ -445,6 +445,7 @@ def get_dates():
 
 
 @app.route('/api/v1/dates', methods=["POST"])
+@auth.login_required
 def make_date():
     if not request.json:
         abort(400)
@@ -487,8 +488,15 @@ def make_date():
 
 
 @app.route('/api/v1/dates/<int:id>', methods=["GET"])
+@auth.login_required
 def get_date(id):
-    pass
+    date = session.query(MealDate).filter_by(id=id).first()
+    if date is None:
+        return jsonify({"error": "No date found for id %s" % id}), 404
+    if date.user1_id == g.user.id or date.user2_id == g.user.id:
+        return jsonify(MealDate=date.serialize)
+    else:
+        abort(401)
 
 
 @app.route('/api/v1/dates/<int:id>', methods=["PUT", "DELETE"])

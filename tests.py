@@ -87,7 +87,7 @@ def populate_dates():
     session.commit()
 
 
-# populate_users()
-# populate_requests()
-# populate_proposals()
+populate_users()
+populate_requests()
+populate_proposals()
 populate_dates()
