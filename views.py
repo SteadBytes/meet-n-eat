@@ -446,7 +446,44 @@ def get_dates():
 
 @app.route('/api/v1/dates', methods=["POST"])
 def make_date():
-    pass
+    if not request.json:
+        abort(400)
+    proposal_id = request.json.get('proposal_id')
+    proposal_accepted = request.json.get('proposal_accepted')
+    proposal = session.query(Proposal).filter_by(id=proposal_id).first()
+    if proposal is None:
+        return jsonify({"error": "No proposal found for id %s" % proposal_id}), 404
+    initial_req = proposal.request
+    # Dont make date if request has already been filled
+    if initial_req.filled:
+        return jsonify({"result": False})
+    if proposal_accepted:
+        try:
+            restaurant_info = find_a_restaurant(
+                initial_req.meal_type, initial_req.location_string)
+            if type(restaurant_info) == dict:
+                restaurant_name = restaurant_info['name']
+                restaurant_address = restaurant_info['address']
+                restaurant_picture = restaurant_info['image_url']
+        except Exception as e:
+            print(e)
+        new_date = MealDate(user1_id=proposal.to_user,
+                            user2_id=proposal.from_user,
+                            restaurant_name=restaurant_name,
+                            restaurant_address=restaurant_address,
+                            restaurant_picture=restaurant_picture,
+                            meal_time=initial_req.meal_time)
+        # update to include filled=True
+        session.add(proposal)
+        session.add(initial_req)
+        session.add(new_date)
+        session.commit()
+        return jsonify({"result": True, "date": new_date.serialize})
+    else:
+        # Proposal rejected by user
+        session.delete(proposal)
+        session.commit()
+        return jsonify({"result": True, "message": "Proposal id=%s deleted" % proposal_id})
 
 
 @app.route('/api/v1/dates/<int:id>', methods=["GET"])

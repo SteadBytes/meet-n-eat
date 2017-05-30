@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
@@ -62,6 +62,7 @@ class Request(Base):
     latitude = Column(String)
     longitude = Column(String)
     meal_time = Column(String)
+    filled = Column(Boolean, unique=False, default=False)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -69,6 +70,7 @@ class Request(Base):
     def serialize(self):
         return {
             'meal_type': self.meal_type,
+            "filled": self.filled,
             'location_string': self.location_string,
             'longitude': self.longitude,
             'latitude': self.latitude,
@@ -87,11 +89,13 @@ class Proposal(Base):
     user2 = relationship("User", foreign_keys=[from_user])
     request_id = Column(Integer, ForeignKey('request.id'))
     request = relationship(Request)
+    filled = Column(Boolean, unique=False, default=False)
 
     @property
     def serialize(self):
         return {
             'id': self.id,
+            "filled": self.filled,
             'request_id': self.request_id,
             'to_user': self.to_user,
             'from_user': self.from_user,
@@ -111,11 +115,13 @@ class MealDate(Base):
     restaurant_address = Column(String)
     restaurant_picture = Column(String)
     meal_time = Column(String)
+    filled = Column(Boolean, unique=False, default=False)
 
     @property
     def serialize(self):
         return {
             'id': self.id,
+            "filled": self.filled,
             'user1': self.user1_id,
             'user2': self.user2_id,
             'restaurant_name': self.restaurant_name,
