@@ -380,7 +380,10 @@ def update_request(id):
 @app.route('/api/v1/proposals', methods=["GET"])
 @auth.login_required
 def get_proposals():
-    pass
+    user = g.user
+    proposals = session.query(Proposal).filter((
+        Proposal.to_user == user.id) | (Proposal.from_user == user.id))
+    return jsonify(Proposals=[i.serialize for i in proposals])
 
 
 @app.route('/api/v1/proposals', methods=["POST"])

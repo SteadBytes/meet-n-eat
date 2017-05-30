@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import random
 from findarestaurant import get_geocode_location
-from models import User, Request
+from models import User, Request, Proposal
 engine = create_engine('sqlite:///meet-n-eat.db')
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
@@ -29,6 +29,7 @@ meal_types = ["Pizza", "Sushi", "Italian", "French",
 
 location_strings = ["Colchester, Essex", "Jakarta, Indonesia",
                     "Tokyo, Japan", "Sydney Australia", "Los Angeles, California"]
+user_ids = list(range(1, 11))
 
 
 def populate_requests():
@@ -46,5 +47,21 @@ def populate_requests():
     session.commit()
 
 
-populate_users()
-populate_requests()
+def populate_proposals():
+    for i in range(1, 11):
+        from_user = random.choice(user_ids)
+        to_user = random.choice(user_ids)
+        if to_user == from_user:
+            to_user -= 1
+        request_id = i
+        proposal = Proposal(from_user=from_user,
+                            to_user=to_user, request_id=request_id)
+        session.add(proposal)
+        print("Proposal from %s to %s added successfully" %
+              (from_user, to_user))
+    session.commit()
+
+
+# populate_users()
+# populate_requests()
+# populate_proposals()
