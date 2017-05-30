@@ -73,7 +73,8 @@ class Request(Base):
             'longitude': self.longitude,
             'latitude': self.latitude,
             'meal_time': self.meal_time,
-            'user_id': self.user_id
+            'user_id': self.user_id,
+            'id': self.id
         }
 
 
@@ -90,6 +91,8 @@ class Proposal(Base):
     @property
     def serialize(self):
         return {
+            'id': self.id,
+            'request_id': self.request_id,
             'to_user': self.to_user,
             'from_user': self.from_user,
         }
@@ -108,6 +111,18 @@ class MealDate(Base):
     restaurant_address = Column(String)
     restaurant_picture = Column(String)
     meal_time = Column(String)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user1': self.user1_id,
+            'user2': self.user2_id,
+            'restaurant_name': self.restaurant_name,
+            'restaurant_address': self.restaurant_address,
+            'restaurant_picture': self.restaurant_picture,
+            'meal_time': self.meal_time
+        }
 
 
 engine = create_engine('sqlite:///meet-n-eat.db')

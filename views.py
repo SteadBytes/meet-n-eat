@@ -409,18 +409,39 @@ def make_proposal():
 
 
 @app.route('/api/v1/proposals/<int:id>', methods=["GET"])
+@auth.login_required
 def get_proposal(id):
-    pass
+    try:
+        proposal = session.query(Proposal).filter_by(id=id).one()
+    except:
+        return jsonify({"error": "No proposal found for given id"}), 404
+
+    if proposal.to_user != g.user.id or proposal.from_user != g.user.id:
+        abort(401)
+    return jsonify(Proposal=proposal.serialize)
 
 
-@app.route('/api/v1/proposals/<int:id>', methods=["PUT", "DELETE"])
+@app.route('/api/v1/proposals/<int:id>', methods=["DELETE"])
+@auth.login_required
 def update_proposal(id):
-    pass
+    try:
+        proposal = session.query(Proposal).filter_by(id=id).one()
+    except:
+        return jsonify({"error": "No proposal found for given id"}), 404
+
+    if g.user.id != proposal.from_user:
+        abort(401)
+    session.delete(proposal)
+    session.commit()
+    return jsonify({"message": "Proposal id=%s deleted successfully" % id}), 200
 
 
 @app.route('/api/v1/dates', methods=["GET"])
+@auth.login_required
 def get_dates():
-    pass
+    dates = session.query(MealDate).filter(
+        (MealDate.user1_id == g.user.id) | (MealDate.user2_id == g.user.id))
+    return jsonify(MealDates=[i.serialize for i in dates])
 
 
 @app.route('/api/v1/dates', methods=["POST"])

@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import random
-from findarestaurant import get_geocode_location
-from models import User, Request, Proposal
+from findarestaurant import get_geocode_location, find_a_restaurant
+from models import User, Request, Proposal, MealDate
 engine = create_engine('sqlite:///meet-n-eat.db')
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
@@ -62,6 +62,32 @@ def populate_proposals():
     session.commit()
 
 
-populate_users()
-populate_requests()
-populate_proposals()
+def populate_dates():
+    proposals = session.query(Proposal).all()
+    for proposal in proposals:
+        r = session.query(Request).filter_by(
+            id=proposal.request_id).first()
+        user1_id = proposal.to_user
+        user2_id = proposal.from_user
+        meal_time = r.meal_time
+        try:
+            restaurant_info = find_a_restaurant(r.meal_type, r.location_string)
+            if type(restaurant_info) == dict:
+                restaurant_name = restaurant_info['name']
+                restaurant_address = restaurant_info['address']
+                restaurant_picture = restaurant_info['image_url']
+        except Exception as e:
+            print(e)
+
+        date = MealDate(user1_id=user1_id, user2_id=user2_id, restaurant_name=restaurant_name,
+                        restaurant_address=restaurant_address, restaurant_picture=restaurant_picture, meal_time=meal_time)
+
+        session.add(date)
+
+    session.commit()
+
+
+# populate_users()
+# populate_requests()
+# populate_proposals()
+populate_dates()

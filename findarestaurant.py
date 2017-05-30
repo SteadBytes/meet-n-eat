@@ -64,10 +64,10 @@ def find_a_restaurant(meal_type, location_string):
             image_url = "http://pixabay.com/get/8926af5eb597ca51ca4c/1433440765/cheeseburger-34314_1280.png?direct"
 
         # print result to terminal
-        print("Restaurant name: " + str(restaurant_name))
-        print("Address: " + str(address))
-        print("Image: " + str(image_url))
+        # print("Restaurant name: " + str(restaurant_name))
+        # print("Address: " + str(address))
+        # print("Image: " + str(image_url))
         # return dict (restaurant_name, address, image)
-        return{'name': restaurant_name, 'address': address, 'image _url': image_url}
+        return{'name': restaurant_name, 'address': address, 'image_url': image_url}
     else:
         return "No restaurants found"
