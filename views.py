@@ -142,7 +142,7 @@ def make_user():
     user.hash_password(password)
     session.add(user)
     session.commit()
-    return jsonify({'message': 'successful user registration', 'user': user.serialize}), 200
+    return jsonify({'message': 'successful user registration', 'user': user.serialize}), 201
 
 
 @app.route('/api/v1/users', methods=["PUT", 'DELETE'])
@@ -330,7 +330,7 @@ def make_request():
                          longitude=lng, meal_time=meal_time)
     session.add(newRequest)
     session.commit()
-    return jsonify({"message": "New MealDate request successful", "request": newRequest.serialize})
+    return jsonify({"message": "New MealDate request successful", "request": newRequest.serialize}), 201
 
 
 @app.route('/api/v1/requests/<int:id>', methods=["GET"])
@@ -387,8 +387,25 @@ def get_proposals():
 
 
 @app.route('/api/v1/proposals', methods=["POST"])
+@auth.login_required
 def make_proposal():
-    pass
+    user = g.user
+    if not request.json:
+        abort(400)
+    request_id = request.json.get('request_id')
+    try:
+        r = session.query(Request).filter_by(id=request_id).one()
+    except:
+        return jsonify({"error": "No request found for given id"}), 404
+    to_user = r.user_id
+    from_user = g.user.id
+    if to_user == from_user:
+        return jsonify({"error": "Proposing user and recipient user cannot be the same"}), 400
+    proposal = Proposal(to_user=to_user, from_user=from_user,
+                        request_id=request_id)
+    session.add(proposal)
+    session.commit()
+    return jsonify({"success": "Proposal created successfully", "proposal": proposal.serialize}), 201
 
 
 @app.route('/api/v1/proposals/<int:id>', methods=["GET"])
