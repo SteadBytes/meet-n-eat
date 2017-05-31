@@ -1,2 +1,4 @@
 *.pyc
 *.db
+# Local API secrets directory during development
+mysecrets/
