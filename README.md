@@ -29,7 +29,7 @@ Meet N' Eat is a social application for meeting people based on their food inter
   * `$ python3 models.py`
 2. Optional - populate database with test data:
   * `python3 tests.py`
-3. Make sure Redis instance is running for rate limiting
+3. Make sure Redis server is running for rate limiting
   * `$ redis-server`
 3. API can be run with:
   * `$ python3 views.py`
