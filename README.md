@@ -17,13 +17,12 @@ Meet N' Eat is a social application for meeting people based on their food inter
 
 ### Setup external APIs
 1. Navigate to `secrets` directory
-2. Replace the information in the secrets files with your own Google/Foursquare API information.
-3. Set up a new Google project [here] (https://console.developers.google.com/).
-4. Set up Oauth 2 and Google Maps Geocode API under the google API manager.
-5. Download the Outh2 client id JSON from the credentials section and replace the 'client_secrets.json' file with it.
-6. Copy the API key for Geocoding from the same page and place into `google_geocode.json`
-7. Create a new Foursquare app [here](https://developer.foursquare.com/)
-8. Copy the CLIENT_ID and CLIENT_secret into `foursquare_secrets.json`
+2. Set up a new Google project [here](https://console.developers.google.com/).
+3. Set up Oauth 2 and Google Maps Geocode API under the google API manager.
+4. Download the **Oauth2 client id JSON** from the credentials section and replace the `client_secrets.json` file with it.
+5. Copy the API key for Geocoding from the same page and place into `google_geocode.json`
+6. Create a new Foursquare app [here](https://developer.foursquare.com/)
+7. Copy the `CLIENT_ID` and `CLIENT_SECRET` into `foursquare_secrets.json`
 
 ### Run Meet N' Eat API
 1. Create database:
