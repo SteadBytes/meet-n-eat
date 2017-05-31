@@ -5,9 +5,12 @@ import httplib2
 import sys
 import codecs
 
-foursquare_client_id = "0O45JJHMVB3JJC0R4Y0M3QZEO1CXN3AJEOEJRUWGZ5NCAHMQ"
-foursquare_client_secret = "NBOFYMWMDVBZADJUKQHYHWVT1ZC3ISTRI4SMFGNBCTWGVB4V"
-google_api_key = "AIzaSyDwHMp_nkCaqonNZKkPNXj_7hwGMbzMHxU"
+foursquare_client_id = json.loads(
+    open('secrets/foursquare_secrets.json', 'r').read())['client_id']
+foursquare_client_secret = json.loads(
+    open('secrets/foursquare_secrets.json', 'r').read())['client_secret']
+google_api_key = json.loads(
+    open('secrets/google_geocode.json', 'r').read())['geocoding']['key']
 
 
 def get_geocode_location(input_string):

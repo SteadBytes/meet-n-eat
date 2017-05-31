@@ -25,7 +25,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 app = Flask(__name__)
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())[
+CLIENT_ID = json.loads(open('secrets/client_secrets.json', 'r').read())[
     'web']['client_id']
 
 
@@ -417,7 +417,7 @@ def get_proposal(id):
         return jsonify({"error": "No proposal found for given id"}), 404
 
     if proposal.to_user != g.user.id or proposal.from_user != g.user.id:
-        abort(401)
+        abort(403)
     return jsonify(Proposal=proposal.serialize)
 
 
@@ -430,7 +430,7 @@ def update_proposal(id):
         return jsonify({"error": "No proposal found for given id"}), 404
 
     if g.user.id != proposal.from_user:
-        abort(401)
+        abort(403)
     session.delete(proposal)
     session.commit()
     return jsonify({"message": "Proposal id=%s deleted successfully" % id}), 200
@@ -496,12 +496,20 @@ def get_date(id):
     if date.user1_id == g.user.id or date.user2_id == g.user.id:
         return jsonify(MealDate=date.serialize)
     else:
-        abort(401)
+        abort(403)
 
 
-@app.route('/api/v1/dates/<int:id>', methods=["PUT", "DELETE"])
+@app.route('/api/v1/dates/<int:id>', methods=["DELETE"])
 def udpate_date(id):
-    pass
+    date = session.query(MealDate).filter_by(id=id).first()
+    if date is None:
+        return jsonify({"error": "No date found for id %s" % id}), 404
+    if date.user1_id != g.user.id or date.user2_id != g.user.id:
+        abort(403)
+
+    session.delete(date)
+    session.commit()
+    return jsonify({"message": "MealDate id=%s deleted successfully" % id}), 200
 
 
 if __name__ == '__main__':
