@@ -39,7 +39,7 @@ Meet N' Eat is a social application for meeting people based on their food inter
 Allows for easy usage with same system configuration used during development:
 1. Ensure [Vagrant](https://www.vagrantup.com/), [Virtual Box](https://www.virtualbox.org/) and [Python](https://www.python.org/) are installed on your machine.
 2. Clone the Udacity [fullstack-nanodegree-vm](https://github.com/udacity/fullstack-nanodegree-vm)
-3. [Clone](https://github.com/SteadBytes/udacity-fsnd-meet-n-eat.git) or [download](https://github.com/SteadBytes/udacity-fsnd-meet-n-eat/archive/master.zip) this repo into the `/vagrant` directory
+3. [Clone](https://github.com/SteadBytes/meet-n-eat.git) or [download](https://github.com/SteadBytes/meet-n-eat/archive/master.zip) this repo into the `/vagrant` directory
 4. Launch the VM:
   * `vagrant$ vagrant up`
 5. SSH into the VM:
