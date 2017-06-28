@@ -1,5 +1,5 @@
 # Meet N' Eat
-![Part of the Udacity Front-End Web Development Nanodegree](https://img.shields.io/badge/Udacity-Front--End%20Web%20Developer%20Nanodegree-02b3e4.svg)
+![Part of the Udacity Full-Stack Web Development Nanodegree](https://img.shields.io/badge/Udacity-Full--Stack%20Web%20Developer%20Nanodegree-02b3e4.svg)
 ----------------------------
 Meet N' Eat is a social application for meeting people based on their food interests
 
